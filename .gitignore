@@ -1,0 +1,25 @@
+
+
+# ignore log files and databases
+*.log
+*.sql
+*.sqlite
+*.ipynb_checkpoints
+*.pyc
+
+# ignore cache
+.idea
+.pytest_cache
+.DS_Store
+__pycache__
+
+# temporals
+tmp
+_tmp
+deleteme*
+
+# pip install
+build
+dist
+netin.egg-info
+
