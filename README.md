@@ -1,4 +1,4 @@
-# www2023
+# SNMA - Social Network Modeling and Applications
 Tutorial material presented at The ACM Web Conference 2023
 
 ## Get started
