@@ -21,15 +21,17 @@ from netin.utils import constants as const
 def update_name_homophily(data: Union[Graph, pd.DataFrame]) -> str:
     """
     Renames the object name to include the homophily values of the graph.
-    :param data:
-    :return:
+
+    Parameters
+    ----------
+    data: Graph or pd.DataFrame
+        The graph or dataframe containing the name of the graph (model or dataset) and the homophily values.
+
+    Returns
+    -------
+    str
+        The new name
     """
-
-    # valid = [Graph, pd.DataFrame]
-    # test = [c for c in valid if isinstance(data, c)]
-    # if len(test) == 0:
-    #     raise TypeError(f"The data must be one of these types: {valid}")
-
     if pd.DataFrame == type(data):
         current = data.name
         h_MM = data.h_MM.unique()[0]
@@ -46,9 +48,14 @@ def update_name_homophily(data: Union[Graph, pd.DataFrame]) -> str:
 def plot_edge_type_counts(data: Union[Graph, list[Graph], set[Graph]], fn=None, **kwargs):
     """
     Plots the edge type counts of a single or multiple graphs
-    :param data: a single graph or a list of graphs
-    :param kwargs: width_bar, figsize, loc, nc_legend
-    :return:
+
+    Parameters
+    ----------
+    data: netin.Graph or List[netin.Graph] or Set[netin.Graph]
+        a single graph or a list of graphs
+
+    kwargs: dict
+        width_bar, figsize, loc, nc_legend
     """
 
     if type(data) not in [list, set, List, Set]:
@@ -67,7 +74,7 @@ def plot_edge_type_counts(data: Union[Graph, list[Graph], set[Graph]], fn=None, 
     groups = None
     maxy = 0
     for g in data:
-        etc = g.count_edges_types()
+        etc = g.calculate_edge_type_counts()
         name = g.get_model_name()
 
         groups = list(etc.keys()) if groups is None else groups
@@ -274,11 +281,19 @@ def prepare_graph(g: Union[nx.Graph, nx.DiGraph], name: str, class_attribute: st
     return gn
 
 
-def load_fb_data(path: str = 'data/fb_friends') -> Union[netin.DiGraph, netin.UnDiGraph]:
+def load_fb_data_as_networkx(path: str = 'data/fb_friends') -> nx.Graph:
     """
     Loads the Facebook data from the given path. It returns the graph as a netin.DiGraph or netin.UnDiGraph.
-    :param path: path to the data
-    :return: netin.DiGraph or netin.UnDiGraph
+
+    Parameters
+    ----------
+    path: str
+        path to the data
+
+    Returns
+    -------
+        g
+            netin.DiGraph or netin.UnDiGraph
     """
     def read_edges(fn: str) -> List[Tuple[int, int]]:
         edges = []
@@ -310,5 +325,4 @@ def load_fb_data(path: str = 'data/fb_friends') -> Union[netin.DiGraph, netin.Un
     unk = {n: -1 for n, obj in g.nodes(data=True) if 'gender' not in obj}
     nx.set_node_attributes(g, unk, 'gender')
 
-    g = prepare_graph(g, name='fb_friends', class_attribute='gender')
     return g
