@@ -139,7 +139,8 @@ def _plot_graph(g, ax, pos, **kwargs):
     arrow_size = kwargs.get('arrow_size', 2)
 
     # nodes
-    maj = g.graph['class_values'][g.graph['class_labels'].index("M")]
+    #maj = g.graph['class_values'][g.graph['class_labels'].index("M")]
+    maj = g.graph['class_values'][0] # position 0 is always majority
     nodes, node_colors = zip(
         *[(node, viz.COLOR_MAJORITY if data[g.graph['class_attribute']] == maj else viz.COLOR_MINORITY)
           for node, data in g.nodes(data=True)])
@@ -182,7 +183,7 @@ def _save_plot(fig: matplotlib.figure.Figure, fn=None, **kwargs):
     plt.close()
 
 
-def plot_samples(originals: List[netin.Graph], samples: List[List[netin.Graph]], fn: str = None, seed=None, **kwargs):
+def plot_samples(originals: List[netin.Graph], samples: List[List[netin.Graph]], ignore_singletons: bool = False, fn: str = None, seed=None, **kwargs):
     """
     Plots the original graphs (row=0) and the samples (row=1,2,...) in a grid.
     Columns represent a different configuration of network structure, and rows (row>=1) represent a different sample.
@@ -194,9 +195,10 @@ def plot_samples(originals: List[netin.Graph], samples: List[List[netin.Graph]],
     :return: None
     """
     # validate all sub-lists have the same size
+    
     ngs = len(originals)
-    if len(samples) == 0 or sum([len(ss) != ngs for ss in samples]) > 1:
-        raise ValueError("The number of graphs in each sample must be the same, and there must be at least one sample.")
+    if len(samples) == 0 or sum([len(samples_per_method) != ngs for samples_per_method in samples]) > 1:
+        raise ValueError("The number of graphs in `samples` must be the same, and there must be at least one sample.")
 
     # plot
     nr = 1 + len(samples)
@@ -207,6 +209,13 @@ def plot_samples(originals: List[netin.Graph], samples: List[List[netin.Graph]],
 
     # plot original graph
     for col, g in enumerate(originals):
+
+        if ignore_singletons:
+            g = g.copy()
+            to_remove = [n for n in g.nodes() if g.degree(n) == 0]
+            if len(to_remove) > 0:
+                g.remove_nodes_from(to_remove)
+                
         ax = axes[0, col]
         pos = nx.spring_layout(g, seed=seed)
         ax.set_title(g.get_model_name())
@@ -216,10 +225,16 @@ def plot_samples(originals: List[netin.Graph], samples: List[List[netin.Graph]],
         ax.set_axis_off()
 
         # plot samples
-        for row, sample_set in enumerate(samples):
+        for row, sample_set in enumerate(samples):    
             ax = axes[row + 1, col]
             s = sample_set[col]
-            # title = s.get_model_name()
+            
+            if ignore_singletons:
+                s = s.copy()
+                to_remove = [n for n in s.nodes() if s.degree(n) == 0]
+                if len(to_remove) > 0:
+                    s.remove_nodes_from(to_remove)
+                    
             title = get_title_graph(s)
             ax.set_title(title)
             _plot_graph(s, ax, pos, **kwargs)
