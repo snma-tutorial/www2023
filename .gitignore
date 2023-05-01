@@ -17,8 +17,12 @@ __pycache__
 tmp
 _tmp
 deleteme*
-*_solution.ipynb
+
+# not to be shared
+#*_solution.ipynb
 exercises/plots/*.pdf
+exercises/data/fb_friends/fb_*
+exercises/data/fb_friends/*.csv
 
 # pip install
 build
