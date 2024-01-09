@@ -27,7 +27,7 @@ exceptiongroup==1.1.1
 executing==1.2.0
 fastjsonschema==2.16.3
 flit_core==3.8.0
-fonttools==4.39.3
+fonttools==4.43.0
 fqdn==1.5.1
 idna==3.4
 importlib-metadata==6.4.1
